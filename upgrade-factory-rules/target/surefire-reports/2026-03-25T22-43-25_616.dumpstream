@@ -1,0 +1,5 @@
+# Created at 2026-03-25T22:43:28.887
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Programming\Cursor_workspace\upgrade_mcp_factory\upgrade-factory-mcp\upgrade-factory-mcp\upgrade-factory-rules\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

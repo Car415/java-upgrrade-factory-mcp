@@ -1,0 +1,15 @@
+rules:
+  - ruleId: SEC-001
+    category: SECURITY
+    description: WebSecurityConfigurerAdapter detected
+    severity: HIGH
+    penalty: 12
+    blockingLevel: BLOCKER
+    recommendation: Refactor to SecurityFilterChain-based configuration.
+  - ruleId: SEC-003
+    category: SECURITY
+    description: Custom security filters detected
+    severity: HIGH
+    penalty: 8
+    blockingLevel: BLOCKER
+    recommendation: Re-validate filter ordering and authentication flow after migration.

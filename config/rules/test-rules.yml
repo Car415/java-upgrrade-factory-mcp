@@ -1,0 +1,15 @@
+rules:
+  - ruleId: TEST-001
+    category: TEST
+    description: No meaningful unit tests detected
+    severity: HIGH
+    penalty: 8
+    blockingLevel: BLOCKER
+    recommendation: Add baseline tests before attempting migration.
+  - ruleId: TEST-002
+    category: TEST
+    description: Low integration test coverage
+    severity: HIGH
+    penalty: 6
+    blockingLevel: WARNING
+    recommendation: Add smoke and integration validation before rollout.

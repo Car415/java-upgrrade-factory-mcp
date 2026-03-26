@@ -1,0 +1,15 @@
+rules:
+  - ruleId: BUILD-001
+    category: BUILD
+    description: Java version below target baseline
+    severity: MEDIUM
+    penalty: 5
+    blockingLevel: WARNING
+    recommendation: Align maven compiler properties and toolchain to Java 21.
+  - ruleId: BUILD-005
+    category: BUILD
+    description: Parent POM or BOM constrains runtime upgrade
+    severity: HIGH
+    penalty: 6
+    blockingLevel: BLOCKER
+    recommendation: Review inherited dependency management and decouple old version locks.

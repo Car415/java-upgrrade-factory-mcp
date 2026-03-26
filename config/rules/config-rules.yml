@@ -1,0 +1,15 @@
+rules:
+  - ruleId: CFG-001
+    category: CONFIG
+    description: bootstrap.yml detected
+    severity: LOW
+    penalty: 3
+    blockingLevel: WARNING
+    recommendation: Review property loading model under Spring Boot 3.x.
+  - ruleId: CFG-003
+    category: CONFIG
+    description: Hardcoded environment-specific values detected
+    severity: MEDIUM
+    penalty: 5
+    blockingLevel: WARNING
+    recommendation: Externalize environment-sensitive values before modernization.

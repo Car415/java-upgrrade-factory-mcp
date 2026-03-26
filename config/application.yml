@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+upgrade-factory:
+  rules-path: ../config/rules
+  target-java-version: 21
+  target-spring-boot-version: 3.5.12
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

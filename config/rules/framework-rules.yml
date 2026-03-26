@@ -1,0 +1,15 @@
+rules:
+  - ruleId: FW-001
+    category: FRAMEWORK
+    description: Spring Boot version below 2.7
+    severity: HIGH
+    penalty: 8
+    blockingLevel: BLOCKER
+    recommendation: Move through a compatibility path toward Spring Boot 3.5.12.
+  - ruleId: FW-002
+    category: FRAMEWORK
+    description: Spring Cloud release train incompatible with Boot 3 target
+    severity: HIGH
+    penalty: 10
+    blockingLevel: BLOCKER
+    recommendation: Validate supported Spring Cloud release train before upgrade.

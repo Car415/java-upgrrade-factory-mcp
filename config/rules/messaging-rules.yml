@@ -1,0 +1,15 @@
+rules:
+  - ruleId: MSG-001
+    category: MESSAGING
+    description: Spring Cloud Stream detected
+    severity: MEDIUM
+    penalty: 4
+    blockingLevel: WARNING
+    recommendation: Validate binder and consumer behavior under the target stack.
+  - ruleId: MSG-003
+    category: MESSAGING
+    description: Shared queue consumer pattern detected
+    severity: HIGH
+    penalty: 10
+    blockingLevel: BLOCKER
+    recommendation: Avoid direct parallel run on shared queue without isolation strategy.

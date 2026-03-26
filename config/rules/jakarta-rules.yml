@@ -1,0 +1,15 @@
+rules:
+  - ruleId: JAK-001
+    category: JAKARTA
+    description: javax.servlet usage detected
+    severity: HIGH
+    penalty: 8
+    blockingLevel: BLOCKER
+    recommendation: Refactor to jakarta.servlet and re-test servlet behavior.
+  - ruleId: JAK-004
+    category: JAKARTA
+    description: Widespread javax footprint detected
+    severity: HIGH
+    penalty: 10
+    blockingLevel: BLOCKER
+    recommendation: Apply namespace migration recipes, then manually review framework-sensitive areas.
