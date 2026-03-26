@@ -1,3 +1,4 @@
 com\company\upgradefactory\app\service\MigrationPlanApplicationService$1.class
 com\company\upgradefactory\app\api\ApiExceptionHandler.class
 com\company\upgradefactory\app\api\ApiExceptionHandler$ValidationErrorResponse.class
+com\company\upgradefactory\app\cli\AssessmentCliService.class

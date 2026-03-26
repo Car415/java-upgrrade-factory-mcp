@@ -1,7 +1,7 @@
 # Upgrade Factory MCP
 
 Multi-module Maven starter for the Upgrade Factory MCP.
-
+ 
 ## Baseline
 - Java 21
 - Spring Boot 3.5.12

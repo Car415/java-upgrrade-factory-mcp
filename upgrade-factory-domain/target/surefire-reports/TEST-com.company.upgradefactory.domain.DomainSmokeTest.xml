@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.company.upgradefactory.domain.DomainSmokeTest" time="0.26" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.company.upgradefactory.domain.DomainSmokeTest" time="0.128" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="CN"/>
     <property name="sun.boot.library.path" value="D:\sandbox\jdk-21.0.9_windows-x64_bin\jdk-21.0.9\bin"/>
-    <property name="sun.java.command" value="C:\Users\surface pro\AppData\Local\Temp\surefire10732064036723042944\surefirebooter-20260325224326204_3.jar C:\Users\surface pro\AppData\Local\Temp\surefire10732064036723042944 2026-03-25T22-43-25_616-jvmRun1 surefire-20260325224326204_1tmp surefire_0-20260325224326204_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\surface pro\AppData\Local\Temp\surefire1829382377695089545\surefirebooter-20260326205758751_3.jar C:\Users\surface pro\AppData\Local\Temp\surefire1829382377695089545 2026-03-26T20-57-58_581-jvmRun1 surefire-20260326205758751_1tmp surefire_0-20260326205758751_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="D:\Programming\Cursor_workspace\upgrade_mcp_factory\upgrade-factory-mcp\upgrade-factory-mcp\upgrade-factory-domain\target\test-classes;D:\Programming\Cursor_workspace\upgrade_mcp_factory\upgrade-factory-mcp\upgrade-factory-mcp\upgrade-factory-domain\target\classes;C:\Users\surface pro\.m2\repository\org\junit\jupiter\junit-jupiter\5.12.2\junit-jupiter-5.12.2.jar;C:\Users\surface pro\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.12.2\junit-jupiter-api-5.12.2.jar;C:\Users\surface pro\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\surface pro\.m2\repository\org\junit\platform\junit-platform-commons\1.12.2\junit-platform-commons-1.12.2.jar;C:\Users\surface pro\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\surface pro\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.12.2\junit-jupiter-params-5.12.2.jar;C:\Users\surface pro\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.12.2\junit-jupiter-engine-5.12.2.jar;C:\Users\surface pro\.m2\repository\org\junit\platform\junit-platform-engine\1.12.2\junit-platform-engine-1.12.2.jar;C:\Users\surface pro\.m2\repository\org\assertj\assertj-core\3.27.3\assertj-core-3.27.3.jar;C:\Users\surface pro\.m2\repository\net\bytebuddy\byte-buddy\1.17.8\byte-buddy-1.17.8.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\surface pro\AppData\Local\Temp\surefire10732064036723042944\surefirebooter-20260325224326204_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\surface pro\AppData\Local\Temp\surefire1829382377695089545\surefirebooter-20260326205758751_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.9+7-LTS-338"/>
@@ -50,7 +50,7 @@
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="native.encoding" value="GBK"/>
-    <property name="java.library.path" value="D:\sandbox\jdk-21.0.9_windows-x64_bin\jdk-21.0.9\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Users\surface pro\.codex\tmp\arg0\codex-arg0xA96Ip;C:\Users\surface pro\AppData\Roaming\npm\node_modules\@openai\codex\node_modules\@openai\codex-win32-x64\vendor\x86_64-pc-windows-msvc\path;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\cursor\resources\app\bin;C:\Program Files\nodejs\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Python3\Scripts\;C:\Python3\;C:\Users\surface pro\AppData\Local\Microsoft\WindowsApps;C:\Users\surface pro\AppData\Local\Microsoft\WindowsApps\python3.exe;C:\Conda;C:\Conda\Library\bin;C:\Conda\Scripts;C:\Users\surface pro\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\surface pro\AppData\Roaming\npm;C:\Users\surface pro\.local\bin;D:\sandbox\apache-maven-3.9.14-bin\apache-maven-3.9.14\bin;."/>
+    <property name="java.library.path" value="D:\sandbox\jdk-21.0.9_windows-x64_bin\jdk-21.0.9\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Users\surface pro\.codex\tmp\arg0\codex-arg0e9ZXqx;C:\Users\surface pro\AppData\Roaming\npm\node_modules\@openai\codex\node_modules\@openai\codex-win32-x64\vendor\x86_64-pc-windows-msvc\path;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Git\cmd;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\cursor\resources\app\bin;C:\Program Files\nodejs\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Python3\Scripts\;C:\Python3\;C:\Users\surface pro\AppData\Local\Microsoft\WindowsApps;C:\Users\surface pro\AppData\Local\Microsoft\WindowsApps\python3.exe;C:\Conda;C:\Conda\Library\bin;C:\Conda\Scripts;C:\Users\surface pro\AppData\Local\Programs\cursor\resources\app\bin;C:\Users\surface pro\AppData\Roaming\npm;C:\Users\surface pro\.local\bin;D:\sandbox\apache-maven-3.9.14-bin\apache-maven-3.9.14\bin;."/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="GBK"/>
     <property name="java.vendor" value="Oracle Corporation"/>
@@ -58,5 +58,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="shouldCreateRepoDescriptor" classname="com.company.upgradefactory.domain.DomainSmokeTest" time="0.2"/>
+  <testcase name="shouldCreateRepoDescriptor" classname="com.company.upgradefactory.domain.DomainSmokeTest" time="0.101"/>
 </testsuite>
