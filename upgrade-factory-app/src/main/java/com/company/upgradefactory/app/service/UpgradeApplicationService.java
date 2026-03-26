@@ -1,0 +1,103 @@
+package com.company.upgradefactory.app.service;
+
+import com.company.upgradefactory.app.dto.AssessmentRequest;
+import com.company.upgradefactory.app.dto.CommandExecutionResult;
+import com.company.upgradefactory.app.dto.UpgradeExecutionPlan;
+import com.company.upgradefactory.app.dto.UpgradeMode;
+import com.company.upgradefactory.app.dto.UpgradeReport;
+import com.company.upgradefactory.domain.model.AssessmentResult;
+import com.company.upgradefactory.domain.model.RuleMatch;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class UpgradeApplicationService {
+
+    private final AssessmentApplicationService assessmentApplicationService;
+    private final UpgradeExecutionPlanner upgradeExecutionPlanner;
+    private final MavenCommandExecutor mavenCommandExecutor;
+
+    public UpgradeApplicationService() {
+        this(new AssessmentApplicationService(),
+                new UpgradeExecutionPlanner(new OpenRewriteRecipeSelector()),
+                new ProcessMavenCommandExecutor());
+    }
+
+    public UpgradeApplicationService(
+            AssessmentApplicationService assessmentApplicationService,
+            UpgradeExecutionPlanner upgradeExecutionPlanner,
+            MavenCommandExecutor mavenCommandExecutor
+    ) {
+        this.assessmentApplicationService = assessmentApplicationService;
+        this.upgradeExecutionPlanner = upgradeExecutionPlanner;
+        this.mavenCommandExecutor = mavenCommandExecutor;
+    }
+
+    public UpgradeReport executeUpgrade(Path repoPath, String repoName, String branch, UpgradeMode mode)
+            throws IOException, InterruptedException {
+        AssessmentResult before = assess(repoPath, repoName, branch);
+        UpgradeExecutionPlan plan = upgradeExecutionPlanner.plan(before, mode);
+        if (mode == UpgradeMode.DRY_RUN || !plan.applyAllowed()) {
+            return new UpgradeReport(
+                    repoName,
+                    repoPath.toString(),
+                    mode,
+                    before,
+                    plan,
+                    List.of(),
+                    null,
+                    before.blockers().stream().map(RuleMatch::recommendation).toList(),
+                    plan.verificationCommands(),
+                    "Upgrade dry-run prepared for %s with %d selected recipe(s)."
+                            .formatted(repoName, plan.selectedRecipes().size())
+            );
+        }
+
+        List<CommandExecutionResult> commandResults = new ArrayList<>();
+        commandResults.add(executeCommand(repoPath, plan.executionCommands().getFirst(), "rewrite"));
+        for (String verificationCommand : plan.verificationCommands()) {
+            commandResults.add(executeCommand(repoPath, verificationCommand, "verification"));
+        }
+        AssessmentResult after = assess(repoPath, repoName, branch);
+        return new UpgradeReport(
+                repoName,
+                repoPath.toString(),
+                mode,
+                before,
+                plan,
+                commandResults,
+                after,
+                after.blockers().stream().map(RuleMatch::recommendation).toList(),
+                plan.verificationCommands(),
+                "Upgrade apply completed for %s with %d command(s) executed."
+                        .formatted(repoName, commandResults.size())
+        );
+    }
+
+    private AssessmentResult assess(Path repoPath, String repoName, String branch) throws IOException {
+        return assessmentApplicationService.assessResult(new AssessmentRequest(
+                repoName,
+                repoPath.toString(),
+                branch,
+                "21",
+                "3.5.12"
+        ));
+    }
+
+    private CommandExecutionResult executeCommand(Path repoPath, String rawCommand, String stage)
+            throws IOException, InterruptedException {
+        List<String> command = List.of(rawCommand.split(" "));
+        CommandExecutionResult result = mavenCommandExecutor.execute(repoPath, command);
+        return new CommandExecutionResult(
+                stage,
+                result.exitCode(),
+                result.standardOutput(),
+                result.standardError(),
+                result.successful()
+        );
+    }
+}

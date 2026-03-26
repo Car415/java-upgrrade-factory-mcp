@@ -10,7 +10,7 @@ Multi-module Maven starter for the Upgrade Factory MCP.
 ## Modules
 - `upgrade-factory-domain`: shared domain model
 - `upgrade-factory-scanner`: deterministic repository scanning
-- `upgrade-factory-rules`: rule loading and rule evaluation
+- `upgrade-factory-rules`: rule loading and rule evaluation 
 - `upgrade-factory-scoring`: readiness scoring and rollout advice
 - `upgrade-factory-report`: JSON/Markdown report generation
 - `upgrade-factory-ai`: AI narrative abstraction layer
