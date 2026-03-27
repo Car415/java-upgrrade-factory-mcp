@@ -24,7 +24,10 @@ class UpgradeApplicationServiceTest {
         RecordingMavenCommandExecutor executor = new RecordingMavenCommandExecutor();
         UpgradeApplicationService service = new UpgradeApplicationService(
                 assessmentService,
-                new UpgradeExecutionPlanner(new OpenRewriteRecipeSelector()),
+                new UpgradeExecutionPlanner(
+                        new OpenRewriteRecipeSelector(),
+                        new OpenRewriteCommandBuilder(new OpenRewriteRecipeArtifactCatalog())
+                ),
                 executor
         );
 
@@ -42,16 +45,39 @@ class UpgradeApplicationServiceTest {
         RecordingMavenCommandExecutor executor = new RecordingMavenCommandExecutor();
         UpgradeApplicationService service = new UpgradeApplicationService(
                 assessmentService,
-                new UpgradeExecutionPlanner(new OpenRewriteRecipeSelector()),
+                new UpgradeExecutionPlanner(
+                        new OpenRewriteRecipeSelector(),
+                        new OpenRewriteCommandBuilder(new OpenRewriteRecipeArtifactCatalog())
+                ),
                 executor
         );
 
         UpgradeReport report = service.executeUpgrade(Path.of("D:/repo"), "sample-service-a", "main", UpgradeMode.APPLY);
 
         assertThat(executor.executedCommands).hasSize(3);
-        assertThat(executor.executedCommands.get(0)).contains("rewrite:run");
+        assertThat(executor.executedCommands.get(0))
+                .contains("org.openrewrite.maven:rewrite-maven-plugin:run")
+                .contains("-Drewrite.recipeArtifactCoordinates=");
         assertThat(report.commandResults()).hasSize(3);
         assertThat(report.postUpgradeAssessment()).isNotNull();
+    }
+
+    @Test
+    void shouldSummarizeRewritePluginResolutionFailuresClearly() throws Exception {
+        FakeAssessmentApplicationService assessmentService = new FakeAssessmentApplicationService();
+        FailingRewriteMavenCommandExecutor executor = new FailingRewriteMavenCommandExecutor();
+        UpgradeApplicationService service = new UpgradeApplicationService(
+                assessmentService,
+                new UpgradeExecutionPlanner(
+                        new OpenRewriteRecipeSelector(),
+                        new OpenRewriteCommandBuilder(new OpenRewriteRecipeArtifactCatalog())
+                ),
+                executor
+        );
+
+        UpgradeReport report = service.executeUpgrade(Path.of("D:/repo"), "sample-service-a", "main", UpgradeMode.APPLY);
+
+        assertThat(report.summary()).contains("Rewrite plugin or recipe resolution failed");
     }
 
     private static final class FakeAssessmentApplicationService extends AssessmentApplicationService {
@@ -78,6 +104,26 @@ class UpgradeApplicationServiceTest {
         public CommandExecutionResult execute(Path repoPath, List<String> command) {
             executedCommands.add(String.join(" ", command));
             return new CommandExecutionResult(command.get(0), 0, "ok", "", true);
+        }
+    }
+
+    private static final class FailingRewriteMavenCommandExecutor implements MavenCommandExecutor {
+
+        private int invocationCount;
+
+        @Override
+        public CommandExecutionResult execute(Path repoPath, List<String> command) {
+            invocationCount++;
+            if (invocationCount == 1) {
+                return new CommandExecutionResult(
+                        "rewrite",
+                        1,
+                        "[ERROR] No plugin found for prefix 'rewrite'",
+                        "",
+                        false
+                );
+            }
+            return new CommandExecutionResult("verification", 0, "ok", "", true);
         }
     }
 }

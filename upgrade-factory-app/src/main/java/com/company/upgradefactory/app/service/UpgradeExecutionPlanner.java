@@ -10,9 +10,18 @@ import java.util.List;
 public class UpgradeExecutionPlanner {
 
     private final OpenRewriteRecipeSelector recipeSelector;
+    private final OpenRewriteCommandBuilder commandBuilder;
 
     public UpgradeExecutionPlanner(OpenRewriteRecipeSelector recipeSelector) {
+        this(recipeSelector, new OpenRewriteCommandBuilder(new OpenRewriteRecipeArtifactCatalog()));
+    }
+
+    public UpgradeExecutionPlanner(
+            OpenRewriteRecipeSelector recipeSelector,
+            OpenRewriteCommandBuilder commandBuilder
+    ) {
         this.recipeSelector = recipeSelector;
+        this.commandBuilder = commandBuilder;
     }
 
     public UpgradeExecutionPlan plan(AssessmentResult result, UpgradeMode mode) {
@@ -24,7 +33,7 @@ public class UpgradeExecutionPlanner {
             manualFollowUp.add("High-severity blockers remain. Treat the automated changes as a starting point and validate with compile, test, and UAT checks.");
         }
 
-        List<String> executionCommands = List.of(buildRewriteCommand(mode, selectedRecipes));
+        List<String> executionCommands = List.of(commandBuilder.buildCommand(mode, selectedRecipes));
         List<String> verificationCommands = List.of(
                 "mvn -q -DskipTests compile",
                 "mvn -q test"
@@ -37,11 +46,5 @@ public class UpgradeExecutionPlanner {
                 manualFollowUp,
                 verificationCommands
         );
-    }
-
-    private String buildRewriteCommand(UpgradeMode mode, List<String> selectedRecipes) {
-        String goal = mode == UpgradeMode.APPLY ? "rewrite:run" : "rewrite:dryRun";
-        return "mvn -q -Drewrite.activeRecipes=%s %s"
-                .formatted(String.join(",", selectedRecipes), goal);
     }
 }

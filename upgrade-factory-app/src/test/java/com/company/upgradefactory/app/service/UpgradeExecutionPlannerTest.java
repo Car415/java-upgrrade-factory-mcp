@@ -15,7 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UpgradeExecutionPlannerTest {
 
-    private final UpgradeExecutionPlanner planner = new UpgradeExecutionPlanner(new OpenRewriteRecipeSelector());
+    private final UpgradeExecutionPlanner planner = new UpgradeExecutionPlanner(
+            new OpenRewriteRecipeSelector(),
+            new OpenRewriteCommandBuilder(new OpenRewriteRecipeArtifactCatalog())
+    );
 
     @Test
     void shouldSelectRecipesAndAllowDryRunForModerateRepo() {
@@ -39,6 +42,10 @@ class UpgradeExecutionPlannerTest {
         assertThat(plan.selectedRecipes())
                 .contains("org.openrewrite.java.migrate.UpgradeToJava21")
                 .contains("org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta");
+        assertThat(plan.executionCommands().getFirst())
+                .contains("org.openrewrite.maven:rewrite-maven-plugin:dryRun")
+                .contains("org.openrewrite.recipe:rewrite-migrate-java")
+                .doesNotContain(" rewrite:dryRun");
         assertThat(plan.verificationCommands()).contains("mvn -q -DskipTests compile", "mvn -q test");
     }
 

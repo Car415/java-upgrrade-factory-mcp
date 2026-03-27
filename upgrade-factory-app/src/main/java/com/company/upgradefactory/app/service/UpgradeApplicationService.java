@@ -68,6 +68,7 @@ public class UpgradeApplicationService {
         }
         AssessmentResult after = assess(repoPath, repoName, branch);
         logger.info("Upgrade apply flow finished for '{}' with {} command result(s)", repoName, commandResults.size());
+        String summary = buildApplySummary(repoName, commandResults);
         return new UpgradeReport(
                 repoName,
                 repoPath.toString(),
@@ -78,8 +79,7 @@ public class UpgradeApplicationService {
                 after,
                 after.blockers().stream().map(RuleMatch::recommendation).toList(),
                 plan.verificationCommands(),
-                "Upgrade apply completed for %s with %d command(s) executed."
-                        .formatted(repoName, commandResults.size())
+                summary
         );
     }
 
@@ -105,5 +105,30 @@ public class UpgradeApplicationService {
                 result.standardError(),
                 result.successful()
         );
+    }
+
+    private String buildApplySummary(String repoName, List<CommandExecutionResult> commandResults) {
+        CommandExecutionResult rewriteResult = commandResults.stream()
+                .filter(result -> "rewrite".equals(result.stage()))
+                .findFirst()
+                .orElse(null);
+        if (rewriteResult != null && !rewriteResult.successful()) {
+            String output = rewriteResult.standardOutput() + System.lineSeparator() + rewriteResult.standardError();
+            if (output.contains("No plugin found for prefix 'rewrite'")
+                    || output.contains("PluginResolutionException")
+                    || output.contains("Could not find artifact org.openrewrite")) {
+                return "Rewrite plugin or recipe resolution failed for %s. Review the generated command and ensure Rewrite plugin coordinates and recipe artifacts are resolvable."
+                        .formatted(repoName);
+            }
+        }
+        boolean verificationFailed = commandResults.stream()
+                .filter(result -> "verification".equals(result.stage()))
+                .anyMatch(result -> !result.successful());
+        if (verificationFailed) {
+            return "Upgrade apply executed for %s, but compile or test verification failed. Review the generated changes and continue manual remediation."
+                    .formatted(repoName);
+        }
+        return "Upgrade apply completed for %s with %d command(s) executed."
+                .formatted(repoName, commandResults.size());
     }
 }
