@@ -2,46 +2,54 @@ package com.company.upgradefactory.app;
 
 import com.company.upgradefactory.app.cli.AssessmentCliService;
 import com.company.upgradefactory.app.cli.UpgradeCliService;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
+import com.company.upgradefactory.app.service.AssessmentApplicationService;
+import com.company.upgradefactory.app.service.OpenRewriteRecipeSelector;
+import com.company.upgradefactory.app.service.ProcessMavenCommandExecutor;
+import com.company.upgradefactory.app.service.UpgradeApplicationService;
+import com.company.upgradefactory.app.service.UpgradeExecutionPlanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@SpringBootApplication(scanBasePackages = "com.company.upgradefactory")
 public class UpgradeFactoryApplication {
 
+    private static final Logger logger = LoggerFactory.getLogger(UpgradeFactoryApplication.class);
+
+    private final AssessmentCliService assessmentCliService;
+    private final UpgradeCliService upgradeCliService;
+
+    public UpgradeFactoryApplication() {
+        AssessmentApplicationService assessmentApplicationService = new AssessmentApplicationService();
+        this.assessmentCliService = new AssessmentCliService(assessmentApplicationService);
+        this.upgradeCliService = new UpgradeCliService(new UpgradeApplicationService(
+                assessmentApplicationService,
+                new UpgradeExecutionPlanner(new OpenRewriteRecipeSelector()),
+                new ProcessMavenCommandExecutor()
+        ));
+    }
+
+    UpgradeFactoryApplication(AssessmentCliService assessmentCliService, UpgradeCliService upgradeCliService) {
+        this.assessmentCliService = assessmentCliService;
+        this.upgradeCliService = upgradeCliService;
+    }
+
     public static void main(String[] args) throws Exception {
-        if (isCliInvocation(args)) {
-            runCli(args);
-            return;
+        int exitCode = new UpgradeFactoryApplication().run(args);
+        if (exitCode != 0) {
+            System.exit(exitCode);
         }
-        SpringApplication.run(UpgradeFactoryApplication.class, args);
     }
 
-    private static boolean isCliInvocation(String[] args) {
-        return args.length > 0 && ("scan".equals(args[0])
-                || "upgrade".equals(args[0])
-                || "help".equals(args[0])
-                || "--help".equals(args[0])
-                || "-h".equals(args[0]));
-    }
-
-    private static void runCli(String[] args) throws Exception {
-        try (ConfigurableApplicationContext context = new SpringApplicationBuilder(UpgradeFactoryApplication.class)
-                .web(WebApplicationType.NONE)
-                .run(args)) {
-            int exitCode;
-            if ("upgrade".equals(args[0])) {
-                UpgradeCliService cliService = context.getBean(UpgradeCliService.class);
-                exitCode = cliService.execute(args);
-            } else {
-                AssessmentCliService cliService = context.getBean(AssessmentCliService.class);
-                exitCode = cliService.execute(args);
-            }
-            if (exitCode != 0) {
-                System.exit(exitCode);
-            }
+    int run(String[] args) throws Exception {
+        String command = args.length == 0 ? "help" : args[0];
+        logger.info("Starting Upgrade Factory CLI with command '{}'", command);
+        if ("upgrade".equals(command)) {
+            return upgradeCliService.execute(args);
         }
+        if ("scan".equals(command) || "help".equals(command) || "--help".equals(command) || "-h".equals(command)) {
+            return assessmentCliService.execute(args);
+        }
+        logger.error("Unsupported command '{}'", command);
+        assessmentCliService.execute(new String[]{"help"});
+        return 1;
     }
 }

@@ -7,16 +7,17 @@ import com.company.upgradefactory.app.dto.UpgradeMode;
 import com.company.upgradefactory.app.dto.UpgradeReport;
 import com.company.upgradefactory.domain.model.AssessmentResult;
 import com.company.upgradefactory.domain.model.RuleMatch;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 public class UpgradeApplicationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UpgradeApplicationService.class);
     private final AssessmentApplicationService assessmentApplicationService;
     private final UpgradeExecutionPlanner upgradeExecutionPlanner;
     private final MavenCommandExecutor mavenCommandExecutor;
@@ -39,9 +40,12 @@ public class UpgradeApplicationService {
 
     public UpgradeReport executeUpgrade(Path repoPath, String repoName, String branch, UpgradeMode mode)
             throws IOException, InterruptedException {
+        logger.info("Preparing upgrade execution for '{}' in {} mode", repoName, mode);
         AssessmentResult before = assess(repoPath, repoName, branch);
         UpgradeExecutionPlan plan = upgradeExecutionPlanner.plan(before, mode);
+        logger.info("Selected {} recipe(s) for '{}': {}", plan.selectedRecipes().size(), repoName, plan.selectedRecipes());
         if (mode == UpgradeMode.DRY_RUN || !plan.applyAllowed()) {
+            logger.info("Returning dry-run report for '{}' without executing Maven commands", repoName);
             return new UpgradeReport(
                     repoName,
                     repoPath.toString(),
@@ -63,6 +67,7 @@ public class UpgradeApplicationService {
             commandResults.add(executeCommand(repoPath, verificationCommand, "verification"));
         }
         AssessmentResult after = assess(repoPath, repoName, branch);
+        logger.info("Upgrade apply flow finished for '{}' with {} command result(s)", repoName, commandResults.size());
         return new UpgradeReport(
                 repoName,
                 repoPath.toString(),
@@ -91,6 +96,7 @@ public class UpgradeApplicationService {
     private CommandExecutionResult executeCommand(Path repoPath, String rawCommand, String stage)
             throws IOException, InterruptedException {
         List<String> command = List.of(rawCommand.split(" "));
+        logger.debug("Executing {} stage command: {}", stage, rawCommand);
         CommandExecutionResult result = mavenCommandExecutor.execute(repoPath, command);
         return new CommandExecutionResult(
                 stage,

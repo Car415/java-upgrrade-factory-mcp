@@ -5,18 +5,19 @@ import com.company.upgradefactory.app.dto.UpgradeReport;
 import com.company.upgradefactory.app.service.UpgradeApplicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Component
 public class UpgradeCliService {
 
     private static final String JSON_REPORT_NAME = "upgrade-factory-upgrade-report.json";
     private static final String MARKDOWN_REPORT_NAME = "upgrade-factory-upgrade-report.md";
+    private static final Logger logger = LoggerFactory.getLogger(UpgradeCliService.class);
 
     private final UpgradeApplicationService upgradeApplicationService;
     private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -34,6 +35,7 @@ public class UpgradeCliService {
         UpgradeMode mode = "true".equalsIgnoreCase(options.getOrDefault("apply", "false"))
                 ? UpgradeMode.APPLY
                 : UpgradeMode.DRY_RUN;
+        logger.info("Running upgrade command for '{}' at {} in {} mode", repoName, repoPath, mode);
 
         UpgradeReport report = upgradeApplicationService.executeUpgrade(repoPath, repoName, branch, mode);
         Files.createDirectories(outputDirectory);
@@ -41,6 +43,7 @@ public class UpgradeCliService {
         Path markdownReport = outputDirectory.resolve(MARKDOWN_REPORT_NAME);
         Files.writeString(jsonReport, objectMapper.writeValueAsString(report));
         Files.writeString(markdownReport, formatMarkdown(report));
+        logger.info("Upgrade report written to {} and {}", jsonReport, markdownReport);
         return 0;
     }
 
@@ -57,6 +60,7 @@ public class UpgradeCliService {
             }
             options.put(key, args[++index]);
         }
+        logger.debug("Parsed upgrade options: {}", options.keySet());
         return options;
     }
 

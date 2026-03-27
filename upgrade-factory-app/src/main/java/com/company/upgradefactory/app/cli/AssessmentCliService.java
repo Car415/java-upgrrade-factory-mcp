@@ -5,7 +5,8 @@ import com.company.upgradefactory.app.service.AssessmentApplicationService;
 import com.company.upgradefactory.domain.model.AssessmentResult;
 import com.company.upgradefactory.report.formatter.JsonReportFormatter;
 import com.company.upgradefactory.report.formatter.MarkdownReportFormatter;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,11 +14,11 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Component
 public class AssessmentCliService {
 
     private static final String JSON_REPORT_NAME = "upgrade-factory-report.json";
     private static final String MARKDOWN_REPORT_NAME = "upgrade-factory-report.md";
+    private static final Logger logger = LoggerFactory.getLogger(AssessmentCliService.class);
 
     private final AssessmentApplicationService assessmentApplicationService;
     private final JsonReportFormatter jsonReportFormatter = new JsonReportFormatter();
@@ -43,6 +44,7 @@ public class AssessmentCliService {
         Path repoPath = resolveRepoPath(options.get("repo"));
         Path outputDirectory = resolveOutputDirectory(options.get("output-dir"), repoPath);
         String repoName = options.getOrDefault("repo-name", repoPath.getFileName().toString());
+        logger.info("Running scan for repository '{}' at {}", repoName, repoPath);
 
         AssessmentResult result = assessmentApplicationService.assessResult(new AssessmentRequest(
                 repoName,
@@ -57,6 +59,9 @@ public class AssessmentCliService {
         Path markdownReport = outputDirectory.resolve(MARKDOWN_REPORT_NAME);
         Files.writeString(jsonReport, jsonReportFormatter.format(result));
         Files.writeString(markdownReport, markdownReportFormatter.format(result));
+        logger.info("Assessment complete for '{}' with readiness score {} and {} blocker(s)",
+                repoName, result.readinessScore(), result.blockers().size());
+        logger.info("Reports written to {} and {}", jsonReport, markdownReport);
 
         printSummary(result, jsonReport, markdownReport);
         return 0;
@@ -76,6 +81,7 @@ public class AssessmentCliService {
             }
             options.put(key, args[++index]);
         }
+        logger.debug("Parsed scan options: {}", options.keySet());
         return options;
     }
 

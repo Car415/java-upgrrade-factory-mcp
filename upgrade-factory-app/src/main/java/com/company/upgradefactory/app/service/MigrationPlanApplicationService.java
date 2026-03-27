@@ -4,7 +4,6 @@ import com.company.upgradefactory.app.dto.MigrationPlanRequest;
 import com.company.upgradefactory.app.dto.MigrationPlanResponse;
 import com.company.upgradefactory.domain.enums.MigrationTier;
 import com.company.upgradefactory.domain.enums.RolloutStrategy;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-@Service
 public class MigrationPlanApplicationService {
 
     public MigrationPlanResponse generatePlan(MigrationPlanRequest request) {

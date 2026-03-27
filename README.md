@@ -4,7 +4,6 @@ Multi-module Maven starter for the Upgrade Factory MCP.
  
 ## Baseline
 - Java 21
-- Spring Boot 3.5.12
 - Maven multi-module build
 
 ## Modules
@@ -14,7 +13,7 @@ Multi-module Maven starter for the Upgrade Factory MCP.
 - `upgrade-factory-scoring`: readiness scoring and rollout advice
 - `upgrade-factory-report`: JSON/Markdown report generation
 - `upgrade-factory-ai`: AI narrative abstraction layer
-- `upgrade-factory-app`: Spring Boot REST API
+- `upgrade-factory-app`: CLI orchestration for scan and upgrade flows
 - `upgrade-factory-testkit`: sample fixtures and golden test inputs
 
 ## Build
@@ -22,7 +21,14 @@ Multi-module Maven starter for the Upgrade Factory MCP.
 mvn clean test
 ```
 
-## Run app
+## Build CLI jar
 ```bash
-mvn -pl upgrade-factory-app spring-boot:run
+mvn -pl upgrade-factory-app -am package
+```
+
+## Run CLI
+```bash
+java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar scan --repo <path-to-maven-repo>
+java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar upgrade --repo <path-to-maven-repo>
+java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar upgrade --repo <path-to-maven-repo> --apply true
 ```

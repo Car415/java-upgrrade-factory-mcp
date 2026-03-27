@@ -15,7 +15,8 @@ import com.company.upgradefactory.scanner.service.RepositoryScannerFacade;
 import com.company.upgradefactory.scoring.service.ReadinessScoreCalculator;
 import com.company.upgradefactory.scoring.service.RolloutStrategyAdvisor;
 import com.company.upgradefactory.scoring.service.TierClassifier;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,9 +30,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
 public class AssessmentApplicationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AssessmentApplicationService.class);
     private static final List<String> RULE_FILES = List.of(
             "build-rules.yml",
             "config-rules.yml",
@@ -54,6 +55,7 @@ public class AssessmentApplicationService {
     }
 
     public AssessmentResult assessResult(AssessmentRequest request) throws IOException {
+        logger.info("Assessing repository '{}' at {}", request.repoName(), request.repoPath());
         RepoDescriptor descriptor = new RepoDescriptor(
                 request.repoName(),
                 request.repoPath(),
@@ -66,6 +68,7 @@ public class AssessmentApplicationService {
         Map<String, RuleDefinition> rulesById = loadRuleCatalog().rules().stream()
                 .collect(Collectors.toMap(RuleDefinition::ruleId, Function.identity(), (left, right) -> left));
         List<RuleMatch> blockers = toRuleMatches(findings, rulesById);
+        logger.info("Scan produced {} finding(s) and {} blocker(s) for '{}'", findings.size(), blockers.size(), request.repoName());
 
         int readinessScore = readinessScoreCalculator.calculate(blockers);
         int automationSuitability = calculateAutomationSuitability(readinessScore, blockers);
@@ -80,6 +83,8 @@ public class AssessmentApplicationService {
                 blockers,
                 "Evidence-driven assessment based on deterministic repository scanning and YAML rule evaluation."
         );
+        logger.info("Assessment summary for '{}': readiness={}, automationSuitability={}, tier={}, rollout={}",
+                request.repoName(), readinessScore, automationSuitability, tier, baseResult.rolloutStrategy());
 
         return new AssessmentResult(
                 baseResult.repoDescriptor(),
@@ -107,6 +112,7 @@ public class AssessmentApplicationService {
     private RuleCatalog loadRuleCatalog() throws IOException {
         Path rulesRoot = locateRulesRoot();
         if (rulesRoot != null) {
+            logger.debug("Loading rule catalog from filesystem path {}", rulesRoot);
             List<RuleDefinition> definitions = new ArrayList<>();
             try (Stream<Path> stream = Files.list(rulesRoot)) {
                 for (Path ruleFile : stream
@@ -118,6 +124,7 @@ public class AssessmentApplicationService {
             }
             return new RuleCatalog(definitions);
         }
+        logger.debug("Loading rule catalog from classpath resources");
         return loadRuleCatalogFromClasspath();
     }
 
