@@ -2,7 +2,6 @@ package com.company.upgradefactory.app.service;
 
 import com.company.upgradefactory.app.dto.UpgradeExecutionPlan;
 import com.company.upgradefactory.app.dto.UpgradeMode;
-import com.company.upgradefactory.domain.enums.MigrationTier;
 import com.company.upgradefactory.domain.model.AssessmentResult;
 
 import java.util.ArrayList;
@@ -18,11 +17,11 @@ public class UpgradeExecutionPlanner {
 
     public UpgradeExecutionPlan plan(AssessmentResult result, UpgradeMode mode) {
         List<String> selectedRecipes = new ArrayList<>(recipeSelector.selectRecipes(result));
-        boolean applyAllowed = result.migrationTier() != MigrationTier.TIER_3_HARD;
+        boolean applyAllowed = true;
         List<String> manualFollowUp = new ArrayList<>();
         manualFollowUp.add("Review the generated dependency, configuration, and API changes before promotion.");
-        if (!applyAllowed) {
-            manualFollowUp.add("Apply mode is blocked for Tier 3 repositories in the initial CLI implementation.");
+        if (result.blockers().stream().anyMatch(match -> match.penaltyApplied() >= 8)) {
+            manualFollowUp.add("High-severity blockers remain. Treat the automated changes as a starting point and validate with compile, test, and UAT checks.");
         }
 
         List<String> executionCommands = List.of(buildRewriteCommand(mode, selectedRecipes));

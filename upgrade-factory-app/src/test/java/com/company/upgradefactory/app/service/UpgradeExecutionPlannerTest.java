@@ -43,7 +43,7 @@ class UpgradeExecutionPlannerTest {
     }
 
     @Test
-    void shouldDisallowApplyForHardTierInInitialVersion() {
+    void shouldAllowApplyForHardTierWhenUserExplicitlyRequestsIt() {
         AssessmentResult result = new AssessmentResult(
                 new RepoDescriptor("hard-service", "D:/repo", "main", "21", "3.5.12"),
                 41,
@@ -56,7 +56,7 @@ class UpgradeExecutionPlannerTest {
 
         UpgradeExecutionPlan plan = planner.plan(result, UpgradeMode.APPLY);
 
-        assertThat(plan.applyAllowed()).isFalse();
-        assertThat(plan.manualFollowUp()).contains("Apply mode is blocked for Tier 3 repositories in the initial CLI implementation.");
+        assertThat(plan.applyAllowed()).isTrue();
+        assertThat(plan.manualFollowUp()).contains("Review the generated dependency, configuration, and API changes before promotion.");
     }
 }

@@ -28,7 +28,7 @@ mvn -pl upgrade-factory-app -am package
 
 ## Run CLI
 ```bash
-java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar scan --repo <path-to-maven-repo>
+ --repo <path-to-maven-repo>
 java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar upgrade --repo <path-to-maven-repo>
 java -jar upgrade-factory-app/target/upgrade-factory-app-0.1.0-SNAPSHOT-jar-with-dependencies.jar upgrade --repo <path-to-maven-repo> --apply true
 ```
